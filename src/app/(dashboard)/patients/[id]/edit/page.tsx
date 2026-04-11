@@ -5,9 +5,10 @@ import { notFound } from "next/navigation"
 export default async function EditPatientPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
-  const { data: patient, error } = await getPatientById(params.id)
+  const { id } = await params
+  const { data: patient, error } = await getPatientById(id)
 
   if (error || !patient) {
     return notFound()

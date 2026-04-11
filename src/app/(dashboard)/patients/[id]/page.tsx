@@ -10,7 +10,8 @@ import {
   Clock, 
   FileText,
   Edit,
-  ArrowLeft
+  ArrowLeft,
+  Activity
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -23,9 +24,10 @@ import { notFound } from "next/navigation"
 export default async function PatientDetailsPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
-  const { data: patient, error } = await getPatientById(params.id)
+  const { id } = await params
+  const { data: patient, error } = await getPatientById(id)
 
   if (error || !patient) {
     return notFound()
