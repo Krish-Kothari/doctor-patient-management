@@ -1,7 +1,7 @@
 "use server"
 
 import { createClient } from "@/utils/supabase/server"
-import { Patient, Visit } from "@/types"
+import { Patient, PatientWithLastVisit, Visit } from "@/types"
 import { revalidatePath } from "next/cache"
 
 export async function getPatients() {
@@ -14,10 +14,11 @@ export async function getPatients() {
   if (error) return { error: error.message }
 
   // Map to include last visit date
-  const patientsWithLastVisit = data.map((patient: any) => {
-    const lastVisit = patient.visits?.[0]?.visit_date
+  const patientsWithLastVisit: PatientWithLastVisit[] = (data ?? []).map((patient) => {
+    const typedPatient = patient as Patient & { visits?: { visit_date: string }[] }
+    const lastVisit = typedPatient.visits?.[0]?.visit_date
     return {
-      ...patient,
+      ...typedPatient,
       last_visit_date: lastVisit
     }
   })

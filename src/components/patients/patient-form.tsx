@@ -28,11 +28,11 @@ const formSchema = z.object({
   phone: z.string().min(8, {
     message: "Phone number must be at least 8 digits.",
   }),
-  email: z.string().email().optional().or(z.literal("")),
-  date_of_birth: z.string().optional().or(z.literal("")),
-  gender: z.string().optional().or(z.literal("")),
-  address: z.string().optional().or(z.literal("")),
-  emergency_contact: z.string().optional().or(z.literal("")),
+  email: z.string().optional(),
+  date_of_birth: z.string().optional(),
+  gender: z.string().optional(),
+  address: z.string().optional(),
+  emergency_contact: z.string().optional(),
 })
 
 interface PatientFormProps {
@@ -58,16 +58,25 @@ export function PatientForm({ initialData }: PatientFormProps) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
+    const normalizedValues = {
+      ...values,
+      email: values.email?.trim() || null,
+      date_of_birth: values.date_of_birth || null,
+      gender: values.gender || null,
+      address: values.address?.trim() || null,
+      emergency_contact: values.emergency_contact?.trim() || null,
+    }
+
     try {
       if (initialData) {
-        const { error } = await updatePatient(initialData.id, values)
+        const { error } = await updatePatient(initialData.id, normalizedValues)
         if (error) {
           toast.error(error)
           return
         }
         toast.success("Patient updated successfully")
       } else {
-        const { error } = await createPatient(values)
+        const { error } = await createPatient(normalizedValues)
         if (error) {
           toast.error(error)
           return
@@ -77,7 +86,7 @@ export function PatientForm({ initialData }: PatientFormProps) {
       
       router.push("/dashboard")
       router.refresh()
-    } catch (error) {
+    } catch {
       toast.error("An unexpected error occurred")
     } finally {
       setIsLoading(false)

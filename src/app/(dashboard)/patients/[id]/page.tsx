@@ -204,7 +204,7 @@ export default async function PatientDetailsPage({
                     <Calendar className="h-8 w-8" />
                   </div>
                   <h3 className="text-lg font-medium text-slate-900">No visit history yet</h3>
-                  <p className="text-slate-500 mb-6">Start tracking this patient's medical journey.</p>
+                  <p className="text-slate-500 mb-6">Start tracking this patient&apos;s medical journey.</p>
                   <AddVisitDialog patientId={patient.id} />
                 </div>
               )}

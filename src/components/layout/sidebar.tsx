@@ -38,24 +38,14 @@ const routes = [
   },
 ];
 
-export function Sidebar() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const supabase = createClient();
-  const [isOpen, setIsOpen] = useState(false);
+interface NavContentProps {
+  pathname: string
+  onLinkClick: () => void
+  onLogout: () => void
+}
 
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success("Logged out successfully");
-      router.push("/login");
-      router.refresh();
-    }
-  };
-
-  const NavContent = () => (
+function NavContent({ pathname, onLinkClick, onLogout }: NavContentProps) {
+  return (
     <div className="space-y-4 py-4 flex flex-col h-full bg-white border-r border-slate-200">
       <div className="px-6 py-2 flex items-center gap-2">
         <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -75,7 +65,7 @@ export function Sidebar() {
                 "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:bg-slate-50 rounded-lg transition",
                 pathname === route.href ? "text-blue-600 bg-blue-50" : "text-slate-500",
               )}
-              onClick={() => setIsOpen(false)}
+              onClick={onLinkClick}
             >
               <div className="flex items-center flex-1">
                 <route.icon className={cn("h-5 w-5 mr-3", route.color)} />
@@ -89,7 +79,7 @@ export function Sidebar() {
         <Button 
           variant="ghost" 
           className="w-full justify-start text-slate-500 hover:text-red-600 hover:bg-red-50"
-          onClick={handleLogout}
+          onClick={onLogout}
         >
           <LogOut className="h-5 w-5 mr-3" />
           Logout
@@ -97,12 +87,34 @@ export function Sidebar() {
       </div>
     </div>
   );
+}
+
+export function Sidebar() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const supabase = createClient();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Logged out successfully");
+      router.push("/login");
+      router.refresh();
+    }
+  };
 
   return (
     <>
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex h-full w-64 flex-col fixed inset-y-0 z-50">
-        <NavContent />
+        <NavContent
+          pathname={pathname}
+          onLinkClick={() => setIsOpen(false)}
+          onLogout={handleLogout}
+        />
       </aside>
 
       {/* Mobile Navigation */}
@@ -114,7 +126,11 @@ export function Sidebar() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="p-0 w-64">
-            <NavContent />
+            <NavContent
+              pathname={pathname}
+              onLinkClick={() => setIsOpen(false)}
+              onLogout={handleLogout}
+            />
           </SheetContent>
         </Sheet>
         <div className="flex items-center gap-2 ml-2">

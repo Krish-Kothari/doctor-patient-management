@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Eye, Edit, Trash2, AlertCircle } from "lucide-react"
+import { Eye, Edit, Trash2, AlertCircle, Search, UserPlus, MoreHorizontal } from "lucide-react"
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/dialog"
 import { deletePatient } from "@/lib/actions/patients"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 interface PatientTableProps {
   patients: PatientWithLastVisit[]
@@ -54,7 +55,7 @@ export function PatientTable({ patients }: PatientTableProps) {
         toast.success("Patient deleted successfully")
         router.refresh()
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete patient")
     } finally {
       setIsDeleting(false)

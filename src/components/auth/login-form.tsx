@@ -57,7 +57,7 @@ export function LoginForm() {
       toast.success("Logged in successfully")
       router.push("/dashboard")
       router.refresh()
-    } catch (error) {
+    } catch {
       toast.error("An unexpected error occurred")
     } finally {
       setIsLoading(false)
@@ -89,7 +89,7 @@ export function LoginForm() {
       }
 
       toast.success("Check your email to confirm your account")
-    } catch (error) {
+    } catch {
       toast.error("An unexpected error occurred")
     } finally {
       setIsLoading(false)

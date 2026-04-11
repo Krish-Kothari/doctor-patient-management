@@ -30,8 +30,8 @@ const formSchema = z.object({
   reason: z.string().min(2, {
     message: "Reason for visit is required.",
   }),
-  notes: z.string().optional().or(z.literal("")),
-  prescriptions: z.string().optional().or(z.literal("")),
+  notes: z.string().optional(),
+  prescriptions: z.string().optional(),
 })
 
 interface AddVisitDialogProps {
@@ -58,7 +58,9 @@ export function AddVisitDialog({ patientId }: AddVisitDialogProps) {
       const { error } = await createVisit({
         patient_id: patientId,
         visit_date: new Date().toISOString(),
-        ...values,
+        reason: values.reason,
+        notes: values.notes?.trim() ? values.notes : null,
+        prescriptions: values.prescriptions?.trim() ? values.prescriptions : null,
       })
 
       if (error) {
@@ -70,7 +72,7 @@ export function AddVisitDialog({ patientId }: AddVisitDialogProps) {
       setOpen(false)
       form.reset()
       router.refresh()
-    } catch (error) {
+    } catch {
       toast.error("An unexpected error occurred")
     } finally {
       setIsLoading(false)
