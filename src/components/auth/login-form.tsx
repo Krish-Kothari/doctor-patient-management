@@ -68,14 +68,27 @@ export function LoginForm() {
     const email = form.getValues("email")
     const password = form.getValues("password")
 
-    if (!email || !password || password.length < 6) {
-      toast.error("Please provide a valid email and a 6-character password to sign up.")
+    // Validate inputs
+    if (!email) {
+      toast.error("Please enter an email address")
+      return
+    }
+
+    if (!password || password.length < 6) {
+      toast.error("Password must be at least 6 characters")
+      return
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address")
       return
     }
 
     setIsLoading(true)
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -85,12 +98,18 @@ export function LoginForm() {
 
       if (error) {
         toast.error(error.message)
+        console.error("Signup error:", error)
         return
       }
 
-      toast.success("Check your email to confirm your account")
-    } catch {
-      toast.error("An unexpected error occurred")
+      if (data?.user) {
+        toast.success("Account created! Check your email to confirm your account.")
+        form.reset()
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "An unexpected error occurred"
+      toast.error(message)
+      console.error("Signup exception:", error)
     } finally {
       setIsLoading(false)
     }
